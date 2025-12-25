@@ -45,6 +45,9 @@ WAITING_FOR_TASK = 1
 WAITING_FOR_AI_MESSAGE = 2
 WAITING_FOR_IMAGE_PROMPT = 3
 
+# UI constants
+TASK_PREVIEW_LENGTH = 30
+
 # Initialize OpenAI client if available
 openai_client = None
 if OPENAI_AVAILABLE and os.getenv('OPENAI_API_KEY'):
@@ -82,7 +85,12 @@ class TodoList:
     
     def add_task(self, task: str) -> int:
         """Add a new task and return its ID"""
-        task_id = len(self.tasks) + 1
+        # Find the maximum existing ID to avoid collisions
+        if self.tasks:
+            task_id = max(task['id'] for task in self.tasks) + 1
+        else:
+            task_id = 1
+        
         new_task = {
             'id': task_id,
             'task': task,
@@ -291,7 +299,7 @@ async def todo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             for task in tasks:
                 keyboard.append([
                     InlineKeyboardButton(
-                        f"✅ #{task['id']} - {task['task'][:30]}...",
+                        f"✅ #{task['id']} - {task['task'][:TASK_PREVIEW_LENGTH]}...",
                         callback_data=f"complete_{task['id']}"
                     )
                 ])
@@ -317,7 +325,7 @@ async def todo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 status = "✅" if task['completed'] else "⏳"
                 keyboard.append([
                     InlineKeyboardButton(
-                        f"🗑️ {status} #{task['id']} - {task['task'][:30]}...",
+                        f"🗑️ {status} #{task['id']} - {task['task'][:TASK_PREVIEW_LENGTH]}...",
                         callback_data=f"delete_{task['id']}"
                     )
                 ])

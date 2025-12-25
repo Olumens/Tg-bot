@@ -102,6 +102,22 @@ def test_todolist_functionality():
         return False
     print("✅ Delete task successful")
     
+    # Test ID collision prevention
+    # Add multiple tasks, delete middle one, add another
+    id1 = todo.add_task("任务1")
+    id2 = todo.add_task("任务2")
+    id3 = todo.add_task("任务3")
+    
+    # Delete middle task
+    todo.delete_task(id2)
+    
+    # Add new task - should get ID 4, not ID 3
+    id4 = todo.add_task("任务4")
+    if id4 <= id3:
+        print(f"❌ ID collision: expected ID > {id3}, got {id4}")
+        return False
+    print("✅ ID collision prevention working")
+    
     # Cleanup test file
     if os.path.exists(todo.filename):
         os.remove(todo.filename)
