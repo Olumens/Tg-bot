@@ -1,0 +1,20 @@
+[Unit]
+Description=Telegram Bot with Todolist, AI Chat and Image Generation
+After=network.target
+
+[Service]
+Type=simple
+User=your_username
+Group=your_group
+WorkingDirectory=/path/to/Tg-bot
+Environment="PATH=/path/to/Tg-bot/venv/bin"
+ExecStart=/path/to/Tg-bot/venv/bin/python /path/to/Tg-bot/bot.py
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
